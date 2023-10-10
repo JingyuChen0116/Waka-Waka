@@ -1,72 +1,91 @@
 package ghost;
-
 import processing.core.*;
 
 public class Fruit extends Cell{
 
-    private int x;
-    private int y;
+    /**
+	 * x-coordinate of the fruit
+	 */
+    protected int x;
 
-    private PImage fruit;
+    /**
+	 * y-coordinate of the fruit
+	 */
+    protected int y;
 
+    /**
+	 * the image of the fruit to be drawn onto the screen
+	 */
+    protected PImage fruit;
+
+    /**
+	 * The game that is currently running
+	 */
+    protected App app;
+
+    /**
+	 * Constructor for a fruit requires x,y coordinates, an image, a game and a boolean expression stands for superfruit
+	 * @param x, x-coordinate of ghost
+	 * @param y, y-coordinate of ghost
+	 * @param fruit, the image of ghost
+	 * @param app, the game which is currently running
+	 */
+    public Fruit(int x, int y, PImage fruit, App app){
+        this.x = x;
+        this.y = y;
+        this.fruit = fruit;
+        this.app = app;
+    }
+
+    /**
+	 * get x-coordinate of fruit
+	 * @return x-coordinate
+	 */
     public int getX(){
         return this.x;
     }
 
+    /**
+	 * get y-coordinate of fruit
+	 * @return y-coordinate
+	 */
     public int getY(){
         return this.y;
     }
 
-    public Fruit(int x, int y, PImage fruit){
-        this.x = x;
-        this.y = y;
-        this.fruit = fruit;
-    }
-
-    public boolean eaten(int playerX, int playerY){
-        int fruitLeft = this.x;
-        int fruitRight = this.x + 16;
-        int fruitTop = this.y;
-        int fruitBottom = this.y + 16;
-
-        int playerLeft = playerX;
-        int playerRight = playerX + 16;
-        int playerTop = playerY;
-        int playerBottom = playerY + 16;
-
-        if (playerRight > fruitLeft && playerRight < fruitRight){
-            if (
-                (playerBottom < fruitBottom && playerBottom > fruitTop) 
-                || (playerBottom == fruitBottom && playerTop == fruitTop) 
-                || (playerTop < fruitBottom && playerTop > fruitTop)
-            ) {
-                return true;
+    /**
+	 * Checking if any fruits being eaten by player
+     * If player collides with any fruits, the fruits are removed
+     * If player collides with a super fruit, start frightened mode
+     * If player collides with a soda can, ghosts become invisible
+	 * @param app, the game that is currently running
+	 */
+    public static void checkFruit(App app){
+        for (int i = 0; i < app.fruits.size(); i++) {
+            if (Cell.collideWithObject(app.player.getX(), app.player.getY(), app.fruits.get(i))){
+                if (app.fruits.get(i) instanceof SuperFruit){
+                    if (app.soda){
+                        app.soda = false;
+                    }
+                    app.frightened = true;
+                    app.frightenedCount = 0;
+                }
+                else if (app.fruits.get(i) instanceof SodaCan){
+                    if (app.frightened){
+                        app.frightened = false;
+                    }
+                    app.soda = true;
+                    app.sodaCount = 0;
+                }
+                app.fruits.remove(i);
             }
         }
-        else if (playerLeft > fruitLeft && playerLeft < fruitRight) {
-            if (
-                (playerBottom < fruitBottom && playerBottom > fruitTop) 
-                || (playerBottom == fruitBottom && playerTop == fruitTop) 
-                || (playerTop < fruitBottom && playerTop > fruitTop)
-            ) {
-                return true;
-            }
-        }
-        else if (playerLeft== fruitLeft && playerRight == fruitRight) {
-            if (
-                (playerTop > fruitTop && playerTop < fruitBottom) 
-                || (playerBottom > fruitTop && playerBottom < fruitBottom)
-            ) {
-                return true;
-            }
-        }
-        return false;
     }
 
-    public void tick(){
-        return;
-    }
-
+    /**
+	 * draw the fruit
+	 * @param app, the PApplet object to be drawn the fruit onto
+	 */
     public void draw(PApplet app){
         app.image(this.fruit, this.x , this.y);
     }

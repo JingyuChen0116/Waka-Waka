@@ -1,0 +1,3 @@
+To implement the extension, I added another symbol 's' in 'map.txt' to represent soda can.
+To run the game, please using 'config.json' and 'map.txt', which are default files in the game already.
+The other json files and map files are for testing.
